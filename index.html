@@ -12,156 +12,153 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-800 text-white font-sans">
+  <div class="container mx-auto flex justify-center items-center mb-2">
+    <img src="verucci logo.enc" alt="Logo Verucci" class="w-16 mt-2 me-2">
+    <h1 class="text-xl md:text-2xl text-center py-2">Catálogo Verucci</h1>
+  </div>
 
-    <div class="container mx-auto flex justify-center items-center">
-      <img src="verucci logo.enc" alt="Logo Verucci" class="w-16 md:w-24 mt-2 me-2">
-      <h1 class="text-xl md:text-2xl text-center py-2">Catálogo Verucci</h1>
-    </div>
+  <div class="container mx-auto px-1 md:px-2 relative md:h-[92vh] h-[80vh]">
+      <div id="flipbook-container" class="relative w-full h-full flex items-top justify-center overflow-hidden">
+          <div id="flipbook" class="mx-auto shadow-2xl">
+              <div class="page bg-white"><img src="flipbook page.png" alt="Producto 1" class="w-full h-full object-contain"></div>
+              <div class="page bg-white"><img src="flipbook page b.png" alt="Producto 1" class="w-full h-full object-contain"></div>
+          </div>
+          
+          <!-- Áreas de clic invisibles para navegación -->
+          <div id="prev-click-area" class="absolute top-0 left-0 h-full w-1/2 z-40 cursor-pointer"></div>
+          <div id="next-click-area" class="absolute top-0 right-0 h-full w-1/2 z-40 cursor-pointer"></div>
+      </div>
+      
+      <!-- Indicador de páginas (opcional) -->
+      <div id="page-indicator" class="text-center text-xs md:text-sm bg-black bg-opacity-70 py-1 px-2 rounded-full absolute bottom-0 left-2/3 transform -translate-x-1/2 mb-1 z-50"></div>
+  </div>
 
-    <div class="container mx-auto px-1 md:px-2 relative h-[92vh]">
-        <div id="flipbook-container" class="relative w-full h-full flex items-center justify-center overflow-hidden">
-            <div id="flipbook" class="mx-auto shadow-2xl">
-                <div class="page bg-white"><img src="flipbook page.png" alt="Producto 1" class="w-full h-full object-contain"></div>
-                <div class="page bg-white"><img src="flipbook page.png" alt="Producto 1" class="w-full h-full object-contain"></div>
-                <div class="page bg-white"><img src="flipbook page.png" alt="Producto 1" class="w-full h-full object-contain"></div>
-            </div>
-            
-            <!-- Áreas de clic invisibles para navegación -->
-            <div id="prev-click-area" class="absolute top-0 left-0 h-full w-1/2 z-40 cursor-pointer"></div>
-            <div id="next-click-area" class="absolute top-0 right-0 h-full w-1/2 z-40 cursor-pointer"></div>
-        </div>
-        
-        <!-- Indicador de páginas (opcional) -->
-        <div id="page-indicator" class="text-center text-xs md:text-sm bg-black bg-opacity-70 py-1 px-2 rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-1 z-50"></div>
-    </div>
-
-    <script>
-        $(document).ready(function () {
-            // Proporción exacta de A4: 210mm × 297mm = 1:1.414
-            const A4_ASPECT_RATIO = 1.414;
-            
-            // Función para calcular el tamaño del flipbook basado en el tamaño de la ventana
-            function calculateSize() {
-                const container = $("#flipbook-container");
-                const containerWidth = container.width();
-                const containerHeight = container.height();
-                
-                let width, height;
-                
-                // Calcular las dimensiones manteniendo la proporción A4
-                if (containerHeight / containerWidth > A4_ASPECT_RATIO) {
-                    // Limitado por ancho
-                    width = containerWidth * 0.98;
-                    height = width * A4_ASPECT_RATIO;
-                    
-                    // Si aún es demasiado alto, ajustamos según la altura
-                    if (height > containerHeight * 0.98) {
-                        height = containerHeight * 0.98;
-                        width = height / A4_ASPECT_RATIO;
-                    }
-                } else {
-                    // Limitado por alto
-                    height = containerHeight * 0.98;
-                    width = height / A4_ASPECT_RATIO;
-                    
-                    // Si aún es demasiado ancho, ajustamos según el ancho
-                    if (width > containerWidth * 0.98) {
-                        width = containerWidth * 0.98;
-                        height = width * A4_ASPECT_RATIO;
-                    }
-                }
-                
-                return { width, height };
-            }
-            
-            // Inicializar con el tamaño adecuado
-            const size = calculateSize();
-            
-            // Inicialización del flipbook
-            $("#flipbook").turn({
-                width: size.width,
-                height: size.height,
-                autoCenter: true,
-                display: 'single', // Siempre mostrar una sola página
-                acceleration: true, // Mejorar rendimiento
-                elevation: 50, // Ángulo de curvatura de página
-                gradients: true, // Sombras realistas
-                duration: 1000, // Duración de la animación
-                page: 1, // Iniciar en la primera página
-                when: {
-                    turned: function(e, page) {
-                        updatePageIndicator(page);
-                    }
-                }
-            });
-            
-            // Actualizar indicador de página
-            function updatePageIndicator(page) {
-                const total = $("#flipbook").turn("pages");
-                $("#page-indicator").text(page + " / " + total);
-            }
-            
-            // Inicializar indicador de página
-            updatePageIndicator($("#flipbook").turn("page"));
-            
-            // Ajustar tamaño en cambio de orientación o redimensionamiento
-            $(window).on('resize orientationchange', function() {
-                setTimeout(function() {
-                    const size = calculateSize();
-                    $("#flipbook").turn("size", size.width, size.height);
-                }, 100);
-            });
-            
-            // Función para el área de clic "Anterior"
-            $("#prev-click-area").click(function(e) {
-                e.preventDefault();
-                $("#flipbook").turn("previous");
-            });
-            
-            // Función para el área de clic "Siguiente"
-            $("#next-click-area").click(function(e) {
-                e.preventDefault();
-                $("#flipbook").turn("next");
-            });
-            
-            // Soporte para gestos táctiles
-            let touchStartX = 0;
-            const flipbook = document.getElementById('flipbook');
-            
-            flipbook.addEventListener('touchstart', function(e) {
-                touchStartX = e.touches[0].clientX;
-            }, false);
-            
-            flipbook.addEventListener('touchend', function(e) {
-                const touchEndX = e.changedTouches[0].clientX;
-                const diff = touchStartX - touchEndX;
-                
-                // Determinar dirección del deslizamiento
-                if (diff > 50) { // Deslizamiento hacia la izquierda (página siguiente)
-                    $("#flipbook").turn("next");
-                } else if (diff < -50) { // Deslizamiento hacia la derecha (página anterior)
-                    $("#flipbook").turn("previous");
-                }
-            }, false);
-            
-            // Precarga de imágenes para un mejor rendimiento
-            $(window).on('load', function() {
-                setTimeout(function() {
-                    const size = calculateSize();
-                    $("#flipbook").turn("size", size.width, size.height);
-                }, 100);
-            });
-            
-            // Activar teclas de flecha para navegación
-            $(document).keydown(function(e){
-                if (e.keyCode == 37) { // Flecha izquierda
-                    $("#flipbook").turn("previous");
-                } else if (e.keyCode == 39) { // Flecha derecha
-                    $("#flipbook").turn("next");
-                }
-            });
-        });
-    </script>
-
+  <script>
+      $(document).ready(function () {
+          // Proporción exacta de A4: 210mm × 297mm = 1:1.414
+          const A4_ASPECT_RATIO = 1.414;
+          
+          // Función para calcular el tamaño del flipbook basado en el tamaño de la ventana
+          function calculateSize() {
+              const container = $("#flipbook-container");
+              const containerWidth = container.width();
+              const containerHeight = container.height();
+              
+              let width, height;
+              
+              // Calcular las dimensiones manteniendo la proporción A4
+              if (containerHeight / containerWidth > A4_ASPECT_RATIO) {
+                  // Limitado por ancho
+                  width = containerWidth * 0.98;
+                  height = width * A4_ASPECT_RATIO;
+                  
+                  // Si aún es demasiado alto, ajustamos según la altura
+                  if (height > containerHeight * 0.98) {
+                      height = containerHeight * 0.98;
+                      width = height / A4_ASPECT_RATIO;
+                  }
+              } else {
+                  // Limitado por alto
+                  height = containerHeight * 0.98;
+                  width = height / A4_ASPECT_RATIO;
+                  
+                  // Si aún es demasiado ancho, ajustamos según el ancho
+                  if (width > containerWidth * 0.98) {
+                      width = containerWidth * 0.98;
+                      height = width * A4_ASPECT_RATIO;
+                  }
+              }
+              
+              return { width, height };
+          }
+          
+          // Inicializar con el tamaño adecuado
+          const size = calculateSize();
+          
+          // Inicialización del flipbook
+          $("#flipbook").turn({
+              width: size.width,
+              height: size.height,
+              autoCenter: true,
+              display: 'single', // Siempre mostrar una sola página
+              acceleration: true, // Mejorar rendimiento
+              elevation: 50, // Ángulo de curvatura de página
+              gradients: true, // Sombras realistas
+              duration: 1000, // Duración de la animación
+              page: 1, // Iniciar en la primera página
+              when: {
+                  turned: function(e, page) {
+                      updatePageIndicator(page);
+                  }
+              }
+          });
+          
+          // Actualizar indicador de página
+          function updatePageIndicator(page) {
+              const total = $("#flipbook").turn("pages");
+              $("#page-indicator").text(page + " / " + total);
+          }
+          
+          // Inicializar indicador de página
+          updatePageIndicator($("#flipbook").turn("page"));
+          
+          // Ajustar tamaño en cambio de orientación o redimensionamiento
+          $(window).on('resize orientationchange', function() {
+              setTimeout(function() {
+                  const size = calculateSize();
+                  $("#flipbook").turn("size", size.width, size.height);
+              }, 100);
+          });
+          
+          // Función para el área de clic "Anterior"
+          $("#prev-click-area").click(function(e) {
+              e.preventDefault();
+              $("#flipbook").turn("previous");
+          });
+          
+          // Función para el área de clic "Siguiente"
+          $("#next-click-area").click(function(e) {
+              e.preventDefault();
+              $("#flipbook").turn("next");
+          });
+          
+          // Soporte para gestos táctiles
+          let touchStartX = 0;
+          const flipbook = document.getElementById('flipbook');
+          
+          flipbook.addEventListener('touchstart', function(e) {
+              touchStartX = e.touches[0].clientX;
+          }, false);
+          
+          flipbook.addEventListener('touchend', function(e) {
+              const touchEndX = e.changedTouches[0].clientX;
+              const diff = touchStartX - touchEndX;
+              
+              // Determinar dirección del deslizamiento
+              if (diff > 50) { // Deslizamiento hacia la izquierda (página siguiente)
+                  $("#flipbook").turn("next");
+              } else if (diff < -50) { // Deslizamiento hacia la derecha (página anterior)
+                  $("#flipbook").turn("previous");
+              }
+          }, false);
+          
+          // Precarga de imágenes para un mejor rendimiento
+          $(window).on('load', function() {
+              setTimeout(function() {
+                  const size = calculateSize();
+                  $("#flipbook").turn("size", size.width, size.height);
+              }, 100);
+          });
+          
+          // Activar teclas de flecha para navegación
+          $(document).keydown(function(e){
+              if (e.keyCode == 37) { // Flecha izquierda
+                  $("#flipbook").turn("previous");
+              } else if (e.keyCode == 39) { // Flecha derecha
+                  $("#flipbook").turn("next");
+              }
+          });
+      });
+  </script>
 </body>
 </html>
