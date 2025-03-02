@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Flipbook</title>
+
+    <!-- jQuery debe cargarse antes de Turn.js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js/turn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-800 text-white font-sans">
+
+    <h1 class="text-3xl text-center py-6">Catálogo Flipbook</h1>
+
+    <div class="container mx-auto relative">
+        <div id="flipbook" class="mx-auto max-w-4xl w-full h-[500px]">
+            <div class="page"><img src="imagen1.jpg" alt="Producto 1" class="w-full h-full object-cover"></div>
+            <div class="page"><img src="imagen1.jpg" alt="Producto 2" class="w-full h-full object-cover"></div>
+            <div class="page"><img src="imagen1.jpg" alt="Producto 3" class="w-full h-full object-cover"></div>
+            <div class="page"><img src="imagen1.jpg" alt="Producto 4" class="w-full h-full object-cover"></div>
+        </div>
+        
+        <!-- Botones de navegación fuera del flipbook -->
+        <button class="absolute top-1/2 left-5 transform -translate-y-1/2 bg-black bg-opacity-70 text-white p-3 rounded-full z-50 cursor-pointer flex items-center justify-center hover:bg-opacity-90 focus:outline-none prev">
+            <i class="fas fa-chevron-left text-xl"></i>
+        </button>
+        <button class="absolute top-1/2 right-5 transform -translate-y-1/2 bg-black bg-opacity-70 text-white p-3 rounded-full z-50 cursor-pointer flex items-center justify-center hover:bg-opacity-90 focus:outline-none next">
+            <i class="fas fa-chevron-right text-xl"></i>
+        </button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Inicialización del flipbook
+            $("#flipbook").turn({
+                width: 800,
+                height: 500,
+                autoCenter: true,
+                display: 'double'
+            });
+
+            // Función para el botón "Anterior"
+            $(".prev").click(function(e) {
+                e.preventDefault();
+                $("#flipbook").turn("previous");
+            });
+
+            // Función para el botón "Siguiente"
+            $(".next").click(function(e) {
+                e.preventDefault();
+                $("#flipbook").turn("next");
+            });
+        });
+    </script>
+
+</body>
+</html>
