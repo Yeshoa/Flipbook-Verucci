@@ -19,25 +19,18 @@
         <div id="flipbook-container" class="relative w-full h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
             <div id="flipbook" class="mx-auto">
                 <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 1" class="w-full h-full object-cover"></div>
-                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 2" class="w-full h-full object-cover"></div>
-                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 3" class="w-full h-full object-cover"></div>
-                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 4" class="w-full h-full object-cover"></div>
+                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 1" class="w-full h-full object-cover"></div>
+                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 1" class="w-full h-full object-cover"></div>
+                <div class="page bg-white"><img src="imagen1.jpg" alt="Producto 1" class="w-full h-full object-cover"></div>
             </div>
-        </div>
-        
-        <!-- Botones de navegación móvil-friendly -->
-        <div class="flex justify-between w-full absolute bottom-0 left-0 right-0 mb-4 px-4 md:px-8 z-50">
-            <button class="prev bg-black bg-opacity-70 text-white p-2 md:p-3 rounded-full hover:bg-opacity-90 focus:outline-none flex items-center justify-center" aria-label="Página anterior">
-                <i class="fas fa-chevron-left text-lg md:text-xl"></i>
-            </button>
             
-            <button class="next bg-black bg-opacity-70 text-white p-2 md:p-3 rounded-full hover:bg-opacity-90 focus:outline-none flex items-center justify-center" aria-label="Página siguiente">
-                <i class="fas fa-chevron-right text-lg md:text-xl"></i>
-            </button>
+            <!-- Áreas de clic invisibles para navegación -->
+            <div id="prev-click-area" class="absolute top-0 left-0 h-full w-1/2 z-40 cursor-pointer"></div>
+            <div id="next-click-area" class="absolute top-0 right-0 h-full w-1/2 z-40 cursor-pointer"></div>
         </div>
         
-        <!-- Indicador de páginas -->
-        <div id="page-indicator" class="text-center text-sm md:text-base bg-black bg-opacity-70 py-1 px-3 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 mt-2 z-50"></div>
+        <!-- Indicador de páginas (opcional) -->
+        <div id="page-indicator" class="text-center text-sm md:text-base bg-black bg-opacity-70 py-1 px-3 rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 z-50"></div>
     </div>
 
     <script>
@@ -48,20 +41,22 @@
                 const containerWidth = container.width();
                 const containerHeight = container.height();
                 
-                // Proporciones para diferentes dispositivos
+                // Mantener proporciones adecuadas para la página
+                const aspectRatio = 3/4; // Proporción típica para catálogos (formato vertical)
+                
                 let width, height;
                 
-                if (window.innerWidth < 640) { // Móviles
-                    // En móviles, mostrar una sola página a la vez
-                    width = Math.min(containerWidth - 40, 450);
-                    height = Math.min(containerHeight - 80, 600);
-                    return { width, height, display: 'single' };
-                } else { // Tablets y escritorio
-                    // En pantallas más grandes, mostrar doble página
-                    width = Math.min(containerWidth - 80, 800);
-                    height = Math.min(containerHeight - 80, 500);
-                    return { width, height, display: 'double' };
+                if (containerHeight * (2/3) > containerWidth) {
+                    // Limitado por ancho
+                    width = Math.min(containerWidth * 0.9, 500);
+                    height = width * aspectRatio;
+                } else {
+                    // Limitado por alto
+                    height = containerHeight * 0.85;
+                    width = height / aspectRatio;
                 }
+                
+                return { width, height };
             }
             
             // Inicializar con el tamaño adecuado
@@ -72,7 +67,7 @@
                 width: size.width,
                 height: size.height,
                 autoCenter: true,
-                display: size.display,
+                display: 'single', // Siempre mostrar una sola página
                 acceleration: true, // Mejorar rendimiento
                 elevation: 50, // Ángulo de curvatura de página
                 gradients: true, // Sombras realistas
@@ -95,44 +90,17 @@
             // Ajustar tamaño en cambio de orientación o redimensionamiento
             $(window).on('resize orientationchange', function() {
                 const size = calculateSize();
-                
-                // Turn.js no permite cambiar entre single y double después de inicializar
-                // Así que reiniciamos el flipbook completamente si cambia el display
-                const currentDisplay = $("#flipbook").turn("display");
-                const currentPage = $("#flipbook").turn("page");
-                
-                if (currentDisplay !== size.display) {
-                    // Destruir y recrear
-                    $("#flipbook").turn("destroy");
-                    $("#flipbook").turn({
-                        width: size.width,
-                        height: size.height,
-                        autoCenter: true,
-                        display: size.display,
-                        page: currentPage,
-                        acceleration: true,
-                        elevation: 50,
-                        gradients: true,
-                        when: {
-                            turned: function(e, page) {
-                                updatePageIndicator(page);
-                            }
-                        }
-                    });
-                } else {
-                    // Solo actualizar tamaño
-                    $("#flipbook").turn("size", size.width, size.height);
-                }
+                $("#flipbook").turn("size", size.width, size.height);
             });
             
-            // Función para el botón "Anterior"
-            $(".prev").click(function(e) {
+            // Función para el área de clic "Anterior"
+            $("#prev-click-area").click(function(e) {
                 e.preventDefault();
                 $("#flipbook").turn("previous");
             });
             
-            // Función para el botón "Siguiente"
-            $(".next").click(function(e) {
+            // Función para el área de clic "Siguiente"
+            $("#next-click-area").click(function(e) {
                 e.preventDefault();
                 $("#flipbook").turn("next");
             });
